@@ -9,7 +9,6 @@ $form.StartPosition = "CenterScreen"
 
 
 
-# File box
 
 $fileBox = New-Object System.Windows.Forms.TextBox
 $fileBox.Location = New-Object System.Drawing.Point(20,40)
@@ -18,7 +17,6 @@ $form.Controls.Add($fileBox)
 
 
 
-# Browse
 
 $browse = New-Object System.Windows.Forms.Button
 $browse.Text = "Browse"
@@ -28,16 +26,16 @@ $browse.Size = New-Object System.Drawing.Size(100,25)
 
 $browse.Add_Click({
 
-$dialog = New-Object System.Windows.Forms.OpenFileDialog
+    $dialog = New-Object System.Windows.Forms.OpenFileDialog
 
-$dialog.Filter = "Video Files|*.mkv;*.mp4;*.mov;*.avi;*.webm"
+    $dialog.Filter = "Video Files|*.mkv;*.mp4;*.mov;*.avi;*.webm"
 
 
-if($dialog.ShowDialog() -eq "OK"){
+    if($dialog.ShowDialog() -eq "OK"){
 
-$fileBox.Text = $dialog.FileName
+        $fileBox.Text = $dialog.FileName
 
-}
+    }
 
 })
 
@@ -46,11 +44,11 @@ $form.Controls.Add($browse)
 
 
 
-# Folder name
 
 $label = New-Object System.Windows.Forms.Label
 $label.Text = "Output Folder Name"
 $label.Location = New-Object System.Drawing.Point(20,90)
+$label.Size = New-Object System.Drawing.Size(200,25)
 $form.Controls.Add($label)
 
 
@@ -62,7 +60,6 @@ $form.Controls.Add($folderBox)
 
 
 
-# Start
 
 $start = New-Object System.Windows.Forms.Button
 $start.Text = "Start Convert"
@@ -79,55 +76,57 @@ $inputFile = $fileBox.Text
 
 if(!$inputFile){
 
-[System.Windows.Forms.MessageBox]::Show("Select video")
-return
+    return
 
 }
 
 
 
+# Folder name
+
 if($folderBox.Text){
 
-$folderName = $folderBox.Text
+    $folderName = $folderBox.Text
 
 }
 else{
 
-$folderName = [System.IO.Path]::GetFileNameWithoutExtension($inputFile)
+    $folderName = [System.IO.Path]::GetFileNameWithoutExtension($inputFile)
 
-$folderName = $folderName -replace '[^a-zA-Z0-9\-]','-'
+    $folderName = $folderName -replace '[^a-zA-Z0-9\-]','-'
 
 }
 
 
 
-$base = Split-Path $inputFile
+$basePath = Split-Path $inputFile
 
 
-$outputFolder = Join-Path $base $folderName
+$outputFolder = Join-Path $basePath $folderName
 
 
 $segmentFolder = Join-Path $outputFolder "segments"
+
 
 
 New-Item -ItemType Directory -Force -Path $segmentFolder | Out-Null
 
 
 
-$output = Join-Path $outputFolder "output.m3u8"
+$outputFile = Join-Path $outputFolder "output.m3u8"
 
 
-$segments = Join-Path $segmentFolder "segment_%05d.ts"
+$segmentFile = Join-Path $segmentFolder "segment_%05d.ts"
 
 
 
-# Close GUI
+
+$form.Hide()
 
 $form.Close()
 
 
 
-# Run FFmpeg in shell
 
 ffmpeg -y `
 -i "$inputFile" `
@@ -144,13 +143,20 @@ ffmpeg -y `
 -hls_base_url "segments/" `
 -hls_segment_type mpegts `
 -hls_start_number_source 0 `
--hls_segment_filename "$segments" `
+-hls_segment_filename "$segmentFile" `
 -f hls `
-"$output"
+"$outputFile"
 
 
 
-Read-Host "Press Enter to close"
+
+while($true){
+
+    Start-Sleep -Seconds 9999
+
+}
+
+
 
 })
 
@@ -158,4 +164,6 @@ Read-Host "Press Enter to close"
 $form.Controls.Add($start)
 
 
-$form.ShowDialog()
+
+
+[void]$form.ShowDialog()
