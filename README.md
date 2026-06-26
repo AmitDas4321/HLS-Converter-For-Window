@@ -123,8 +123,13 @@ Start Convert
 
 ```bash
 git clone https://github.com/AmitDas4321/HLS-Converter.git
+```
 
-cd HLS-Converter
+## Change Diractory
+
+
+```
+cd "HLS-Converter"
 ```
 
 
