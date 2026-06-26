@@ -125,7 +125,7 @@ Start Convert
 git clone https://github.com/AmitDas4321/HLS-Converter.git
 ```
 
-## Change Diractory
+## Change Directory
 
 
 ```
