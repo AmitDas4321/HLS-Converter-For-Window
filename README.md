@@ -176,7 +176,7 @@ Run PowerShell:
 
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File HLS-Converter.ps1
+powershell -ExecutionPolicy Bypass -File script.ps1
 ```
 
 
